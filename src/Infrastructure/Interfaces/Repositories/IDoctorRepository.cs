@@ -7,8 +7,7 @@ public interface IDoctorRepository : IBaseRepository<Doctor>
 {
     Task ChangeStatusAsync(int id, Status status);
 
-    Task<IQueryable<Doctor>> GetByOfficeAsync(int officeId, CancellationToken cancellationToken = default);
-    
-    Task<IQueryable<Doctor>> GetBySpecializationAsync(int specializationId,
-        CancellationToken cancellationToken = default);
+    IQueryable<Doctor> GetByName(string name);
+    IQueryable<Doctor> GetByOffice(int officeId);
+    IQueryable<Doctor> GetBySpecialization(int specializationId);
 }
