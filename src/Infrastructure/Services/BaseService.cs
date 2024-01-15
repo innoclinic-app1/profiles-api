@@ -7,7 +7,7 @@ namespace Infrastructure.Services;
 public abstract class BaseService<TEntity, TDto, TCreateDto, TUpdateDto> 
     : IBaseService<TDto, TCreateDto, TUpdateDto> where TEntity : class
 {
-    protected IBaseRepository<TEntity> Repository { get; }
+    private IBaseRepository<TEntity> Repository { get; }
     
     protected BaseService(IBaseRepository<TEntity> repository)
     {

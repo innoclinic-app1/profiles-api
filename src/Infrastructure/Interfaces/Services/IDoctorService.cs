@@ -4,6 +4,6 @@ namespace Infrastructure.Interfaces.Services;
 
 public interface IDoctorService : IBaseService<DoctorDto, DoctorCreateDto, DoctorUpdateDto>
 {
-    Task<ICollection<DoctorDto>> GetFilteredAsync(string name, int officeId, int specializationId, 
+    Task<ICollection<DoctorDto>> GetManyAsync(string name, int officeId, int specializationId, 
         int skip, int take, CancellationToken cancellationToken = default);
 }

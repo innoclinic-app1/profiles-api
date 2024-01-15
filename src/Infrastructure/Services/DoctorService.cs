@@ -2,18 +2,24 @@
 using Domain.Entities;
 using Infrastructure.Interfaces.Repositories;
 using Infrastructure.Interfaces.Services;
+using Mapster;
 
 namespace Infrastructure.Services;
 
 public class DoctorService : BaseService<Doctor, DoctorDto, DoctorCreateDto, DoctorUpdateDto>, IDoctorService
 {
-    public DoctorService(IBaseRepository<Doctor> repository) : base(repository)
+    private IDoctorRepository Repository { get; }
+    
+    public DoctorService(IDoctorRepository repository) : base(repository)
     {
+        Repository = repository;
     }
 
-    public Task<ICollection<DoctorDto>> GetFilteredAsync(string name, int officeId, int specializationId, int skip, int take,
+    public async Task<ICollection<DoctorDto>> GetManyAsync(string name, int officeId, int specializationId, int skip, int take,
         CancellationToken cancellationToken = default)
     {
-        throw new NotImplementedException();
+        var doctors = await Repository.GetManyAsync(name, officeId, specializationId, skip, take, cancellationToken);
+
+        return doctors.Adapt<ICollection<DoctorDto>>();
     }
 }

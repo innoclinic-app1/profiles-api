@@ -1,6 +1,25 @@
-﻿namespace Infrastructure.Services;
+﻿using Domain.Dtos.Patients;
+using Domain.Entities;
+using Infrastructure.Interfaces.Repositories;
+using Infrastructure.Interfaces.Services;
+using Mapster;
 
-public class PatientService
+namespace Infrastructure.Services;
+
+public class PatientService : BaseService<Patient, PatientDto, PatientCreateDto, PatientUpdateDto>, IPatientService
 {
+    private IPatientRepository Repository { get; }
     
+    public PatientService(IPatientRepository repository) : base(repository)
+    {
+        Repository = repository;
+    }
+
+    public async Task<ICollection<PatientDto>> GetManyAsync(string name, int skip, int take,
+        CancellationToken cancellationToken = default)
+    {
+        var patients = await Repository.GetManyAsync(name, skip, take, cancellationToken);
+        
+        return patients.Adapt<ICollection<PatientDto>>();
+    }
 }
