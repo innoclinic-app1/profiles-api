@@ -27,6 +27,13 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
         await Context.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task RemoveAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var entity = await GetByIdAsync(id, cancellationToken);
+        
+        await RemoveAsync(entity, cancellationToken);
+    }
+
     public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
     {
         Context.Set<T>().Update(entity);
