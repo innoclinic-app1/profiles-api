@@ -9,17 +9,23 @@ public class PatientRepository : BaseRepository<Patient>, IPatientRepository
     {
     }
 
-    public IQueryable<Patient> GetByName(string name)
+    public async Task<IEnumerable<Patient>> GetManyAsync(string name, int skip, int take, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        var query = Context.Patients.AsQueryable();
+        
+        if (!string.IsNullOrWhiteSpace(name))
         {
-            return Context.Patients.AsQueryable();
+            query = GetByName(query, name);
         }
-
+        
+        return await GetManyAsync(query, skip, take, cancellationToken);
+    }
+    
+    private static IQueryable<Patient> GetByName(IQueryable<Patient> query, string name)
+    {
         var searchName = name.ToLower();
         
-        var result = Context.Patients
-            .Where(d =>
+        var result = query.Where(d =>
                 d.FirstName.ToLower().Contains(searchName) || d.LastName.ToLower().Contains(searchName) ||
                 (d.MiddleName != null && d.MiddleName.ToLower().Contains(searchName))
             );

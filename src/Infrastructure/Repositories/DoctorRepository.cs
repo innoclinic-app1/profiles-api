@@ -8,7 +8,6 @@ public class DoctorRepository : BaseRepository<Doctor>, IDoctorRepository
 {
     public DoctorRepository(DataContext context) : base(context)
     {
-        
     }
 
     public async Task ChangeStatusAsync(int id, Status status)
@@ -20,36 +19,51 @@ public class DoctorRepository : BaseRepository<Doctor>, IDoctorRepository
         await Context.SaveChangesAsync();
     }
 
-    public IQueryable<Doctor> GetByName(string name)
+    public async Task<IEnumerable<Doctor>> GetManyAsync(string name, int officeId, int specializationId, int skip, int take,
+        CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        var query = Context.Doctors.AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(name))
         {
-            return Context.Doctors.AsQueryable();
+            query = GetByName(query, name);
+        }
+        
+        if (officeId != 0)
+        {
+            query = GetByOffice(query, officeId);
+        }
+        
+        if (specializationId != 0)
+        {
+            query = GetBySpecialization(query, specializationId);
         }
 
+        return await GetManyAsync(query, skip, take, cancellationToken);
+    }
+
+    private static IQueryable<Doctor> GetByName(IQueryable<Doctor> query, string name)
+    {
         var searchName = name.ToLower();
         
-        var result = Context.Doctors
-            .Where(d =>
-                d.FirstName.ToLower().Contains(searchName) || d.LastName.ToLower().Contains(searchName) ||
-                (d.MiddleName != null && d.MiddleName.ToLower().Contains(searchName))
+        var result = query.Where(d => 
+            d.FirstName.ToLower().Contains(searchName) || 
+            d.LastName.ToLower().Contains(searchName) || 
+            (d.MiddleName != null && d.MiddleName.ToLower().Contains(searchName))
             );
         
         return result;
     }
 
-    public IQueryable<Doctor> GetByOffice(int officeId)
+    private static IQueryable<Doctor> GetByOffice(IQueryable<Doctor> query, int officeId)
     {
-        var result = Context.Doctors.Where(d => d.OfficeId == officeId);
+        var result = query.Where(d => d.OfficeId == officeId);
 
         return result;
     }
 
-    public IQueryable<Doctor> GetBySpecialization(int specializationId)
+    private static IQueryable<Doctor> GetBySpecialization(IQueryable<Doctor> query, int specializationId)
     {
-        return Context.Doctors.Where(d => d.SpecializationId == specializationId);
+        return query.Where(d => d.SpecializationId == specializationId);
     }
 }
-
-
-
