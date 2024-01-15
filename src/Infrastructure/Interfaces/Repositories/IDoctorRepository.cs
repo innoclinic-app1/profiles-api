@@ -6,8 +6,7 @@ namespace Infrastructure.Interfaces.Repositories;
 public interface IDoctorRepository : IBaseRepository<Doctor>
 {
     Task ChangeStatusAsync(int id, Status status);
-
-    IQueryable<Doctor> GetByName(string name);
-    IQueryable<Doctor> GetByOffice(int officeId);
-    IQueryable<Doctor> GetBySpecialization(int specializationId);
+    
+    Task<IEnumerable<Doctor>> GetManyAsync(string name, int officeId, int specializationId, int skip, int take,
+        CancellationToken cancellationToken = default);
 }

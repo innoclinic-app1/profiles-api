@@ -13,7 +13,4 @@ public interface IBaseRepository<T> where T : class
     Task<T> GetByIdAsync(int id, CancellationToken cancellationToken = default);
     
     Task<IEnumerable<T>> GetManyAsync(int skip, int take, CancellationToken cancellationToken = default);
-    
-    Task<IEnumerable<T>> GetManyAsync(IQueryable<T> query, int skip, int take,
-        CancellationToken cancellationToken = default);
 }
