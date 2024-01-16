@@ -1,6 +1,17 @@
-var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
+namespace WebApp;
 
-app.MapGet("/", () => "Hello World!");
+internal static class Program
+{
+    public static async Task Main(string[] args)
+    {
+        var webHost = CreateHostBuilder(args).Build();
 
-app.Run();
+        await webHost.RunAsync();
+    }
+    
+    private static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        return Host.CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>());
+    }
+}
