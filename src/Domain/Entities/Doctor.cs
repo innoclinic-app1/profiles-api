@@ -1,4 +1,5 @@
 ﻿namespace Domain.Entities;
+
 using Status = Enums.EmployeeStatus;
 
 public class Doctor
