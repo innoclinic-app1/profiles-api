@@ -16,9 +16,9 @@ public class PatientService : BaseService<Patient, PatientDto, PatientCreateDto,
     }
 
     public async Task<ICollection<PatientDto>> GetManyAsync(string name, int skip, int take,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellation = default)
     {
-        var patients = await Repository.GetManyAsync(name, skip, take, cancellationToken);
+        var patients = await Repository.GetManyAsync(name, skip, take, cancellation);
         
         return patients.Adapt<ICollection<PatientDto>>();
     }

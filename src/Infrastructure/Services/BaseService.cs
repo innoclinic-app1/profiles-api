@@ -14,36 +14,39 @@ public abstract class BaseService<TEntity, TDto, TCreateDto, TUpdateDto>
         Repository = repository;
     }
     
-    public async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(int id, CancellationToken cancellation = default)
     {
-        await Repository.RemoveAsync(id, cancellationToken);
+        await Repository.RemoveAsync(id, cancellation);
     }
 
-    public async Task<TDto> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    public async Task<TDto> GetByIdAsync(int id, CancellationToken cancellation = default)
     {
-        var entity = await Repository.GetByIdAsync(id, cancellationToken);
+        var entity = await Repository.GetOneAsync(id, cancellation);
 
         return entity.Adapt<TDto>();
     }
 
-    public async Task<ICollection<TDto>> GetManyAsync(int skip, int take, CancellationToken cancellationToken = default)
+    public async Task<ICollection<TDto>> GetManyAsync(int skip, int take, CancellationToken cancellation = default)
     {
-        var entities = await Repository.GetManyAsync(skip, take, cancellationToken);
+        var entities = await Repository.GetManyAsync(skip, take, cancellation);
 
         return entities.Adapt<ICollection<TDto>>();
     }
 
-    public async Task<TDto> CreateAsync(TCreateDto createDto, CancellationToken cancellationToken = default)
+    public async Task<TDto> CreateAsync(TCreateDto createDto, CancellationToken cancellation = default)
     {
         var entity = createDto.Adapt<TEntity>();
 
-        await Repository.InsertAsync(entity, cancellationToken);
+        await Repository.InsertAsync(entity, cancellation);
 
         return entity.Adapt<TDto>();
     }
 
-    public Task<TDto> UpdateAsync(int id, TUpdateDto updateDto, CancellationToken cancellationToken = default)
+    public async Task<TDto> UpdateAsync(int id, TUpdateDto updateDto, CancellationToken cancellation = default)
     {
-        throw new NotImplementedException();
+        var entity = updateDto.Adapt<TEntity>();
+        await Repository.UpdateAsync(id, entity, cancellation);
+
+        return entity.Adapt<TDto>();
     }
 }

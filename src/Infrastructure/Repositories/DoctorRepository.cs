@@ -1,5 +1,7 @@
 ﻿using Domain.Entities;
+using Domain.Exceptions;
 using Infrastructure.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 using Status = Domain.Enums.EmployeeStatus;
 
 namespace Infrastructure.Repositories;
@@ -10,17 +12,22 @@ public class DoctorRepository : BaseRepository<Doctor>, IDoctorRepository
     {
     }
 
-    public async Task ChangeStatusAsync(int id, Status status)
+    public async Task ChangeStatusAsync(int id, Status status, CancellationToken cancellation = default)
     {
-        var doctor = await GetByIdAsync(id);
-
-        doctor.Status = status;
-        
-        await Context.SaveChangesAsync();
+        try
+        {
+            await Context.Doctors.Where(d => d.Id == id)
+                .ExecuteUpdateAsync(d =>
+                    d.SetProperty(x => x.Status, status), cancellation);
+        }
+        catch (ArgumentNullException)
+        {
+            throw new NotFoundException<Doctor>(id);
+        }
     }
 
-    public async Task<IEnumerable<Doctor>> GetManyAsync(string name, int officeId, int specializationId, int skip, int take,
-        CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Doctor>> GetManyAsync(string name, int officeId, int specializationId,
+        int skip, int take, CancellationToken cancellation = default)
     {
         var query = Context.Doctors.AsQueryable();
 
@@ -28,30 +35,30 @@ public class DoctorRepository : BaseRepository<Doctor>, IDoctorRepository
         {
             query = GetByName(query, name);
         }
-        
+
         if (officeId != 0)
         {
             query = GetByOffice(query, officeId);
         }
-        
+
         if (specializationId != 0)
         {
             query = GetBySpecialization(query, specializationId);
         }
 
-        return await GetManyAsync(query, skip, take, cancellationToken);
+        return await GetManyAsync(query, skip, take, cancellation);
     }
 
     private static IQueryable<Doctor> GetByName(IQueryable<Doctor> query, string name)
     {
         var searchName = name.ToLower();
-        
-        var result = query.Where(d => 
-            d.FirstName.ToLower().Contains(searchName) || 
-            d.LastName.ToLower().Contains(searchName) || 
+
+        var result = query.Where(d =>
+            d.FirstName.ToLower().Contains(searchName) ||
+            d.LastName.ToLower().Contains(searchName) ||
             (d.MiddleName != null && d.MiddleName.ToLower().Contains(searchName))
-            );
-        
+        );
+
         return result;
     }
 
@@ -65,5 +72,27 @@ public class DoctorRepository : BaseRepository<Doctor>, IDoctorRepository
     private static IQueryable<Doctor> GetBySpecialization(IQueryable<Doctor> query, int specializationId)
     {
         return query.Where(d => d.SpecializationId == specializationId);
+    }
+
+    public override async Task UpdateAsync(int id, Doctor entity, CancellationToken cancellation = default)
+    {
+        try
+        {
+            await Context.Doctors
+                .Where(d => d.Id == id)
+                .ExecuteUpdateAsync(setters => setters
+                    .SetProperty(e => e.FirstName, entity.FirstName)
+                    .SetProperty(e => e.MiddleName, entity.MiddleName)
+                    .SetProperty(e => e.LastName, entity.LastName)
+                    .SetProperty(e => e.SpecializationId, entity.SpecializationId)
+                    .SetProperty(e => e.OfficeId, entity.OfficeId)
+                    .SetProperty(e => e.BirthDate, entity.BirthDate)
+                    .SetProperty(e => e.CareerStartYear, entity.CareerStartYear)
+                    .SetProperty(e => e.Status, entity.Status), cancellation);
+        }
+        catch (ArgumentNullException)
+        {
+            throw new NotFoundException<Doctor>(id);
+        }
     }
 }

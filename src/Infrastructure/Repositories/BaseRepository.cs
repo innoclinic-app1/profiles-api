@@ -13,50 +13,45 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
         Context = context;
     }
     
-    public async Task InsertAsync(T entity, CancellationToken cancellationToken = default)
+    public async Task InsertAsync(T entity, CancellationToken cancellation = default)
     {
-        await Context.Set<T>().AddAsync(entity, cancellationToken);
+        await Context.Set<T>().AddAsync(entity, cancellation);
         
-        await Context.SaveChangesAsync(cancellationToken);
+        await Context.SaveChangesAsync(cancellation);
     }
 
-    public async Task RemoveAsync(T entity, CancellationToken cancellationToken = default)
+    public async Task RemoveAsync(T entity, CancellationToken cancellation = default)
     {
         Context.Set<T>().Remove(entity);
         
-        await Context.SaveChangesAsync(cancellationToken);
+        await Context.SaveChangesAsync(cancellation);
     }
 
-    public async Task RemoveAsync(int id, CancellationToken cancellationToken = default)
+    public async Task RemoveAsync(int id, CancellationToken cancellation = default)
     {
-        var entity = await GetByIdAsync(id, cancellationToken);
+        var entity = await GetOneAsync(id, cancellation);
         
-        await RemoveAsync(entity, cancellationToken);
+        await RemoveAsync(entity, cancellation);
     }
 
-    public async Task UpdateAsync(T entity, CancellationToken cancellationToken = default)
+    public abstract Task UpdateAsync(int id, T entity, CancellationToken cancellation = default);
+    
+    public async Task<T> GetOneAsync(int id, CancellationToken cancellation = default)
     {
-        Context.Set<T>().Update(entity);
-        
-        await Context.SaveChangesAsync(cancellationToken);
-    }
-
-    public async Task<T> GetByIdAsync(int id, CancellationToken cancellationToken = default)
-    {
-        var entity = await Context.Set<T>().FindAsync(id, cancellationToken) 
+        var entity = await Context.Set<T>().FindAsync(id, cancellation) 
                      ?? throw new NotFoundException<T>(id);
         
         return entity;
     }
 
-    public async Task<IEnumerable<T>> GetManyAsync(int skip, int take, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<T>> GetManyAsync(int skip, int take, CancellationToken cancellation = default)
     {
-        return await Context.Set<T>().Skip(skip).Take(take).ToListAsync(cancellationToken);
+        return await Context.Set<T>().Skip(skip).Take(take).ToListAsync(cancellation);
     }
 
-    public async Task<IEnumerable<T>> GetManyAsync(IQueryable<T> query, int skip, int take,
-        CancellationToken cancellationToken = default)
+    protected async Task<IEnumerable<T>> GetManyAsync(IQueryable<T> query, int skip, int take,
+        CancellationToken cancellation = default)
     {
-        return await query.Skip(skip).Take(take).ToListAsync(cancellationToken);
+        return await query.Skip(skip).Take(take).ToListAsync(cancellation);
     }
 }
