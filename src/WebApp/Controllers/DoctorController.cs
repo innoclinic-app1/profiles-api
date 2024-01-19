@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Domain.Dtos.Doctors;
+using Domain.Enums;
 using Infrastructure.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -55,5 +56,13 @@ public class DoctorController : ControllerBase
         var doctor = await Service.UpdateAsync(id, updateDto, cancellationToken);
 
         return Ok(doctor);
+    }
+    
+    [HttpPut("{id:int}/change-status")]
+    public async Task<IActionResult> ChangeStatus(int id, EmployeeStatus status, CancellationToken cancellationToken)
+    {
+        await Service.ChangeStatusAsync(id, status, cancellationToken);
+
+        return Ok();
     }
 }
