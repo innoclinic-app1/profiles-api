@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebApp.Extensions;
 
-public static class ServiceExtension
+public static class ServiceExtensions
 {
     public static IServiceCollection SetupDatabase(this IServiceCollection services, IConfiguration configuration)
     {
