@@ -50,7 +50,7 @@ public class ReceptionistRepository : BaseRepository<Receptionist>, IReceptionis
         }
         catch (ArgumentNullException)
         {
-            throw new NotFoundException<Patient>(id);
+            throw new NotFoundException(nameof(Receptionist), id);
         }
     }
 }

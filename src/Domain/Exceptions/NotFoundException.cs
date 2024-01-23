@@ -1,8 +1,9 @@
 ﻿namespace Domain.Exceptions;
 
-public class NotFoundException<T> : InvalidOperationException where T : class
+public class NotFoundException : InvalidOperationException
 {
-    public NotFoundException(int id) : base($"Entity of type {typeof(T).Name} with id {id} was not found.")
+    public NotFoundException(string entityName, int id)
+        : base($"Entity of type {entityName} with id {id} was not found.")
     {
     }
 }

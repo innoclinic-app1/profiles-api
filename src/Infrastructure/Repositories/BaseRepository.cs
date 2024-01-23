@@ -39,7 +39,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
     public async Task<T> GetOneAsync(int id, CancellationToken cancellation = default)
     {
         var entity = await Context.Set<T>().FindAsync(id, cancellation) 
-                     ?? throw new NotFoundException<T>(id);
+                     ?? throw new NotFoundException(nameof(T), id);
         
         return entity;
     }

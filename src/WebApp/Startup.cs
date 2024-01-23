@@ -1,4 +1,5 @@
 ﻿using WebApp.Extensions;
+using WebApp.Middlewares;
 
 namespace WebApp;
 
@@ -23,6 +24,8 @@ public class Startup
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
+        
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();

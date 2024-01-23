@@ -22,7 +22,7 @@ public class DoctorRepository : BaseRepository<Doctor>, IDoctorRepository
         }
         catch (ArgumentNullException)
         {
-            throw new NotFoundException<Doctor>(id);
+            throw new NotFoundException(nameof(Doctor), id);
         }
     }
 
@@ -92,7 +92,7 @@ public class DoctorRepository : BaseRepository<Doctor>, IDoctorRepository
         }
         catch (ArgumentNullException)
         {
-            throw new NotFoundException<Doctor>(id);
+            throw new NotFoundException(nameof(Doctor), id);
         }
     }
 }

@@ -50,7 +50,7 @@ public class PatientRepository : BaseRepository<Patient>, IPatientRepository
         }
         catch (ArgumentNullException)
         {
-            throw new NotFoundException<Patient>(id);
+            throw new NotFoundException(nameof(Patient), id);
         }
     }
 }
